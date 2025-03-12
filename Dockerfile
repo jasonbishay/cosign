@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/python:latest-dev
+FROM cgr.dev/chainguard/python
 USER 0
 ENV TZ=US/Eastern
 RUN apk add --no-cache tzdata
