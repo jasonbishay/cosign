@@ -6,10 +6,10 @@ on:
         description: 'Sign with GitHub OIDC'
         type: boolean
         required: true
-        default: false
-  schedule:
-    # At the end of every day
-    - cron: "0 0 * * *"
+        default: true
+  # schedule:
+  #   # At the end of every day
+  #   - cron: "0 0 * * *"
 
 jobs:
   cosign:
@@ -64,7 +64,7 @@ jobs:
       - name: Sign image with Cosign
         run: |
           echo "github signing key: ${GHSIGNINGKEY}"
-          echo "${{ github.event.inputs.GHSIGNINGKEY }}"
+          echo "github signing key2: ${GHSIGNINGKEY2}"
           images=""
           for tag in ${TAGS}; do
             images+="${tag}@${DIGEST} "
@@ -80,6 +80,7 @@ jobs:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
           GHSIGNINGKEY: ${{ inputs.signingKey }}
+          GHSIGNINGKEY2: ${{ github.event.inputs.signingKey }}
       # The easy way:
      # - name: Sign the images using GitHub OIDC Provider
      #   env:
