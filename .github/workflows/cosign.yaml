@@ -5,7 +5,7 @@ on:
       singingKey:
         description: 'Sign with GitHub OIDC'
         type: boolean
-        required: false
+        required: true
         default: true
   schedule:
     # At the end of every day
