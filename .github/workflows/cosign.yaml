@@ -64,6 +64,7 @@ jobs:
       - name: Sign image with Cosign
         run: |
           echo "github signing key: ${GHSIGNINGKEY}"
+          echo "${{ github.event.inputs.GHSIGNINGKEY }}"
           images=""
           for tag in ${TAGS}; do
             images+="${tag}@${DIGEST} "
