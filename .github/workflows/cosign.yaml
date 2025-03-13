@@ -18,9 +18,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - uses: chainguard-dev/setup-chainctl@main
+      - name: Setup Chainctl
+        uses: chainguard-dev/setup-chainctl@main
         with:
           identity: "b8130cfde995dab4bb2f2b8e104417ab3632edd3/27833b8844898552"
+      - run: |
+          docker pull cgr.dev/jbishay.com/python:latest-dev
+          
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.8.1
 
