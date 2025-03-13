@@ -62,7 +62,7 @@ jobs:
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
       - name: Sign image with an external key
-        if: ${{ inputs.signingKey == 'false' }}
+        if: github.event.inputs.inputs.signingKey == 'false'
         run: |
           images=""
           for tag in ${TAGS}; do
@@ -79,7 +79,7 @@ jobs:
         env:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
           TAGS: ${{ steps.docker_meta.outputs.tags }}
-        if: ${{ inputs.signingKey == 'true' }}
+        if: github.event.inputs.signingKey == 'true'
         run: |
           images=""
           for tag in ${TAGS}; do
