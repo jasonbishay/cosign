@@ -1,4 +1,4 @@
-FROM python
+FROM cgr.dev/jbishay.com/python:latest
 USER 0
 ENV TZ=US/Eastern
 #RUN apk add --no-cache tzdata
