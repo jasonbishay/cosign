@@ -1,4 +1,4 @@
-# GitHub Action Using Cosign to Sign and Image
+# GitHub Action Using Cosign to Sign an Image
 The example github action in:
 ```
 .github/workflows/cosign.yaml
