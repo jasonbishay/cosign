@@ -1,15 +1,9 @@
 name: Image Cosign Example
 on:
   workflow_dispatch:
-    inputs:
-      singingKey:
-        description: 'Sign with GitHub OIDC'
-        type: boolean
-        required: true
-        default: true
-  # schedule:
-  #   # At the end of every day
-  #   - cron: "0 0 * * *"
+  schedule:
+    # At the end of every day
+    - cron: "0 0 * * *"
 
 jobs:
   cosign:
@@ -61,7 +55,7 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-      - name: Sign image with Cosign
+      - name: Sign image with Cosign Using Provided Key
         run: |
           echo "github signing key: ${GHSIGNINGKEY}"
           echo "github signing key2: ${GHSIGNINGKEY2}"
@@ -79,17 +73,15 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
-          GHSIGNINGKEY: ${{ inputs.signingKey }}
-          GHSIGNINGKEY2: ${{ github.event.inputs.signingKey }}
       # The easy way:
-     # - name: Sign the images using GitHub OIDC Provider
-     #   env:
-     #     DIGEST: ${{ steps.build-and-push.outputs.digest }}
-     #     TAGS: ${{ steps.docker_meta.outputs.tags }}
-     #   if: github.event.inputs.signingKey == 'true'
-     #   run: |
-     #     images=""
-     #     for tag in ${TAGS}; do
-     #       images+="${tag}@${DIGEST} "
-     #     done
-     #     cosign sign --yes ${images}
+      - name: Sign the images using GitHub OIDC Provider
+        env:
+           DIGEST: ${{ steps.build-and-push.outputs.digest }}
+           TAGS: ${{ steps.docker_meta.outputs.tags }}
+        if: github.event.inputs.signingKey == 'true'
+        run: |
+           images=""
+           for tag in ${TAGS}; do
+             images+="${tag}@${DIGEST} "
+           done
+           cosign sign --yes ${images}
