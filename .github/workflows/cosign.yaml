@@ -55,6 +55,7 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+      # Sign using an externally generated key
       - name: Sign image with Cosign Using Provided Key
         run: |
           echo "github signing key: ${GHSIGNINGKEY}"
@@ -73,12 +74,11 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
-      # The easy way:
-      - name: Sign the images using GitHub OIDC Provider
+      # Sign using GitHub easier setup, but embeds a bunch of information into the certificate that ends up in the rekor logs that some may not like.:
+      - name: Sign the images using GitHub Key
         env:
            DIGEST: ${{ steps.build-and-push.outputs.digest }}
            TAGS: ${{ steps.docker_meta.outputs.tags }}
-        if: github.event.inputs.signingKey == 'true'
         run: |
            images=""
            for tag in ${TAGS}; do
