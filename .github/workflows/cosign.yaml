@@ -68,7 +68,7 @@ jobs:
           for tag in ${TAGS}; do
             images+="${tag}@${DIGEST} "
           done
-          if [ "{$GHSIGNINGKEY}" = true ] ; then
+          if [ "${GHSIGNINGKEY}" = true ] ; then
             cosign sign --yes ${images}
           else
             cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${images}
