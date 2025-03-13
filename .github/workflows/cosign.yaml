@@ -61,28 +61,32 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
-      - name: Sign image with an external key
-        if: github.event.inputs.inputs.signingKey == 'false'
+      - name: Sign image with Cosign
         run: |
+          GH_KEY="${{ inputs.signingKey }}"
           images=""
           for tag in ${TAGS}; do
             images+="${tag}@${DIGEST} "
           done
+          if [ "$GH_KEY" = true ] ; then
+            cosign sign --yes ${images}
+          else
             cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${images}
+          fi
         env:
           TAGS: ${{ steps.docker_meta.outputs.tags }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
       # The easy way:
-      - name: Sign the images using GitHub OIDC Provider
-        env:
-          DIGEST: ${{ steps.build-and-push.outputs.digest }}
-          TAGS: ${{ steps.docker_meta.outputs.tags }}
-        if: github.event.inputs.signingKey == 'true'
-        run: |
-          images=""
-          for tag in ${TAGS}; do
-            images+="${tag}@${DIGEST} "
-          done
-          cosign sign --yes ${images}
+     # - name: Sign the images using GitHub OIDC Provider
+     #   env:
+     #     DIGEST: ${{ steps.build-and-push.outputs.digest }}
+     #     TAGS: ${{ steps.docker_meta.outputs.tags }}
+     #   if: github.event.inputs.signingKey == 'true'
+     #   run: |
+     #     images=""
+     #     for tag in ${TAGS}; do
+     #       images+="${tag}@${DIGEST} "
+     #     done
+     #     cosign sign --yes ${images}
