@@ -6,7 +6,7 @@ on:
         description: 'Sign with GitHub OIDC'
         type: boolean
         required: true
-        default: true
+        default: false
   schedule:
     # At the end of every day
     - cron: "0 0 * * *"
