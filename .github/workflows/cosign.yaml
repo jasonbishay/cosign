@@ -63,6 +63,7 @@ jobs:
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
       - name: Sign image with Cosign
         run: |
+          echo "signingKey: ${{ inputs.signingKey }}"
           GH_KEY="${{ inputs.signingKey }}"
           images=""
           for tag in ${TAGS}; do
