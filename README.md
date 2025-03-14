@@ -17,8 +17,6 @@ The example shows two ways to sign the image using cosign:
       # Sign using an externally generated key
       - name: Sign image with Cosign Using Provided Key
         run: |
-          echo "github signing key: ${GHSIGNINGKEY}"
-          echo "github signing key2: ${GHSIGNINGKEY2}"
           images=""
           for tag in ${TAGS}; do
             images+="${tag}@${DIGEST} "
