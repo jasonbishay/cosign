@@ -26,6 +26,9 @@ jobs:
           
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.8.1
+        
+      - name: Install Syft
+        uses: anchore/sbom-action@v0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.4.0
@@ -50,16 +53,19 @@ jobs:
         uses: docker/build-push-action@v6.14.0
         id: build-and-push
         with:
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ghcr.io/jasonbishay/cosign
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
       # Sign using an externally generated key
       - name: Sign image with Cosign Using Provided Key
         run: |
-          echo "github signing key: ${GHSIGNINGKEY}"
-          echo "github signing key2: ${GHSIGNINGKEY2}"
           images=""
           for tag in ${TAGS}; do
             images+="${tag}@${DIGEST} "
