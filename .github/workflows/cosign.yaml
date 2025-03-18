@@ -62,7 +62,8 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           github-token: ${{ secrets.GH_TOKEN }}
-          #image: ghcr.io/jasonbishay/cosign
+          image: ghcr.io/jasonbishay/cosign/cosign-example:latest
+          output-file: /tmp/workflow-sbom.spdx.json
 
       # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
       # Sign using an externally generated key
