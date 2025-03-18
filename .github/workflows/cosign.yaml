@@ -78,7 +78,7 @@ jobs:
             cosign sign --yes ${images}
           else
             cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${images}
-            cosign attest --yes --type spdxjson --predicate /tmp/workflow-sbom.spdx.json ${DIGEST}
+            # cosign attest --yes --type spdxjson --predicate /tmp/workflow-sbom.spdx.json ${DIGEST}
           fi
         env:
           TAGS: ${{ steps.docker_meta.outputs.tags }}
