@@ -60,6 +60,7 @@ jobs:
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
+        id: generate-sbom
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           image: ghcr.io/jasonbishay/cosign/cosign-example:latest
@@ -77,12 +78,14 @@ jobs:
             cosign sign --yes ${images}
           else
             cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${images}
+            cosign attest --yes --type spdxjson --predicate /tmp/workflow-sbom.spdx.json ${DIGEST}
           fi
         env:
           TAGS: ${{ steps.docker_meta.outputs.tags }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          SBOM: ${{ steps.generate-sbom.outputs.cmd }}
       # Sign using GitHub easier setup, but embeds a bunch of information into the certificate that ends up in the rekor logs that some may not like.:
       - name: Sign the images using GitHub Key
         env:
