@@ -94,3 +94,12 @@ jobs:
            done
            cosign sign --yes ${images}
            cosign attest --yes --type spdxjson --predicate /tmp/workflow-sbom.spdx.json ${images}
+
+      - name: Attest
+        uses: actions/attest-sbom@v2
+        id: attest
+        with:
+          subject-name: ghcr.io/jasonbishay/cosign/cosign-example
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+          sbom-path: '/tmp/workflow-sbom.spdx.json'
+          push-to-registry: true
