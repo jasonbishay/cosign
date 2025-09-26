@@ -24,35 +24,36 @@ jobs:
           identity: "b8130cfde995dab4bb2f2b8e104417ab3632edd3/27833b8844898552"
           
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.8.1
+        uses: sigstore/cosign-installer@v3
         
       - name: Install Syft
         uses: anchore/sbom-action@v0
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.4.0
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.9.0
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3.3.0
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GH_TOKEN }}
 
       - id: docker_meta
-        uses: docker/metadata-action@v5.6.1
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/jasonbishay/cosign
           tags: type=sha,format=long
 
       - name: Verify Signature from CGR Registry
         run: |
+          # in this example we are using python from the Chainguard public registry, if pulling for a private cgr registry update the verify command, see: https://edu.chainguard.dev/chainguard/chainguard-images/how-to-use/verifying-chainguard-images-and-metadata-signatures-with-cosign/#privatededicated-registry
           cosign verify \
-          --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
-          --certificate-identity=https://github.com/chainguard-images/images-private/.github/workflows/release.yaml@refs/heads/main \
+            --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+            --certificate-identity=https://github.com/chainguard-images/images/.github/workflows/release.yaml@refs/heads/main \
           cgr.dev/jbishay.com/python:latest-dev
       
       - name: Build and Push container images
