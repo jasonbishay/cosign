@@ -48,13 +48,27 @@ jobs:
           images: ghcr.io/jasonbishay/cosign
           tags: type=sha,format=long
 
+      # Dynamically extract the base image from your Dockerfile
+      - name: Extract Base Image from Dockerfile
+        id: base-image
+        run: |
+          IMAGE=$(grep -m 1 '^FROM' Dockerfile | awk '{print $2}')
+          if [ -z "$IMAGE" ]; then
+            echo "❌ No FROM line found in Dockerfile!"
+            exit 1
+          fi
+          echo "✅ Base image found: $IMAGE"
+          echo "base_image=$IMAGE" >> $GITHUB_OUTPUT
+
+      # Verify the Chainguard base image signature before using it
       - name: Verify Signature from CGR Registry
         run: |
-          # in this example we are using python from the Chainguard public registry, if pulling for a private cgr registry update the verify command, see: https://edu.chainguard.dev/chainguard/chainguard-images/how-to-use/verifying-chainguard-images-and-metadata-signatures-with-cosign/#privatededicated-registry
+          IMAGE="${{ steps.base-image.outputs.base_image }}"
+          echo "🔍 Verifying base image: $IMAGE"
           cosign verify \
             --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
             --certificate-identity=https://github.com/chainguard-images/images/.github/workflows/release.yaml@refs/heads/main \
-          cgr.dev/jbishay.com/python:latest-dev
+            "$IMAGE"
       
       - name: Build and Push container images
         uses: docker/build-push-action@v6.14.0
